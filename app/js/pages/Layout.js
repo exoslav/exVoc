@@ -4,7 +4,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import InfoBox from '../components/InfoBox'
 import WordsList from '../components/wordsList'
-import NewWordForm from '../components/NewWordForm'
+import Form from '../components/Form'
 import LanguageMenu from '../components/LanguageMenu'
 import FeaturedList from '../components/featuredList'
 import * as WordListActions from '../actions/WordListActions'
@@ -77,46 +77,6 @@ class Layout extends React.Component {
     })
   }
 
-  addWordListItem() {
-    let name = document.getElementById('create-to-do-item-name')
-    let content = document.getElementById('create-to-do-item-content')
-    let wordClass = document.getElementById('create-to-do-item-wordclass')
-    let learned = document.getElementById('create-to-do-item-learned')
-    let idioms = document.getElementById('create-to-do-item-idiom')
-
-    let valid = true
-    if(name.value === '') {
-      $(name).addClass('invalid')
-      valid = false
-    } else {
-      $(name).removeClass('invalid')
-    }
-
-    if(content.value === '') {
-      $(content).addClass('invalid')
-      valid = false
-    } else {
-      $(content).removeClass('invalid')
-    }
-
-    if(!valid)
-      return
-
-    WordListActions.createTodo({
-      name: name.value,
-      content: content.value,
-      wordClass: parseInt(wordClass.value),
-      learned: learned.checked,
-      idioms: idioms.checked,
-      lang: this.state.vocabularyLang
-    })
-  }
-
-  deleteWordListItem(e) {
-    const id = e.target.getAttribute('data-id')
-    WordListActions.deleteWordListItem(id, this.state.vocabularyLang)
-  }
-
   addFeaturedWordsItem(e) {
     let name = document.getElementById('create-featured-item-name').value
     let content = document.getElementById('create-featured-item-content').value
@@ -144,8 +104,10 @@ class Layout extends React.Component {
           <div class="container">
             <div class="row">
               <div class="col-sm-6">
-                <NewWordForm
-                  createItem={this.addWordListItem.bind(this)}
+                <Form
+                  lang={this.state.vocabularyLang}
+                  WordListActions={WordListActions}
+                  FeaturedWordsActions={FeaturedWordsActions}
                 />
               </div>
 
@@ -175,8 +137,10 @@ class Layout extends React.Component {
           />
 
           <WordsList
+            lang={this.state.vocabularyLang}
             items={this.state.wordList}
-            delete={this.deleteWordListItem.bind(this)}
+            WordListActions={WordListActions}
+            FeaturedWordsActions={FeaturedWordsActions}
           />
         </div>
 

@@ -18,6 +18,12 @@ class WordList extends React.Component {
     }
   }
 
+  deleteWordListItem(e) {
+    const id = e.target.getAttribute('data-id')
+
+    this.props.WordListActions.deleteWordListItem(id, this.props.lang)
+  }
+
   handleActiveClassOnFilterMenu(e) {
     if(e.target.getAttribute('data-filter-type') === 'layout') {
       $('.layout-filter button').removeClass('active bg-primary').addClass('bg-info')
@@ -96,10 +102,12 @@ class WordList extends React.Component {
     if(filteredItems.length === 0) {
       block = <NoResult />
     } else {
-      const WordList = filteredItems.map((item) => <WordsListItem
-        deleteItem={this.props.delete}
+      const WordList = filteredItems.map(item => <WordsListItem
+        deleteItem={this.deleteWordListItem.bind(this)}
+        FeaturedWordsActions={this.props.FeaturedWordsActions}
         key={item.id}
         data={item}
+        lang={this.props.lang}
         layout={this.state.layout}
       />)
 
@@ -138,7 +146,7 @@ class WordList extends React.Component {
             <li>
               <strong>Others:</strong>
               <ul class="list-unstyled">
-                <li><button onClick={this.setFilter.bind(this)} data-filter-type="other" data-filter-value="idioms" class="btn bg-info btn-xs">Idioms</button></li>
+                <li><button onClick={this.setFilter.bind(this)} data-filter-type="other" data-filter-value="idiom" class="btn bg-info btn-xs">Idioms</button></li>
                 <li><button onClick={this.setFilter.bind(this)} data-filter-type="other" data-filter-value="learned" class="btn bg-info btn-xs">Learned</button></li>
               </ul>
             </li>

@@ -16,11 +16,14 @@ class Store extends EventEmitter {
   }
 
   addFeaturedItem(data) {
+    const { name, description, learned, wordClass } = data
+
     this.featuredList[data.lang].push({
       id: Date.now(),
-      name: data.name,
-      content: data.content,
-      wordType: 2
+      name,
+      description,
+      learned,
+      wordClass
     })
 
     this.emit('change')
@@ -41,7 +44,6 @@ class Store extends EventEmitter {
       case 'ADD_FEATURED_ITEM':
         this.addFeaturedItem(action.data)
         break;
-      default:
       case 'DELETE_FEATURED_ITEM':
         this.deleteFeaturedItem(action.id, action.lang)
         break;
