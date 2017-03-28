@@ -105,6 +105,7 @@ class WordList extends React.Component {
       const WordList = filteredItems.map(item => <WordsListItem
         deleteItem={this.deleteWordListItem.bind(this)}
         FeaturedWordsActions={this.props.FeaturedWordsActions}
+        WordListActions={this.props.WordListActions}
         key={item.id}
         data={item}
         lang={this.props.lang}

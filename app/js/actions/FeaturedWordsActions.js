@@ -1,13 +1,14 @@
 import Dispatcher from '../dispatcher'
 
-export function addFeaturedItem(data) {
+export function addItem(data, lang) {
   Dispatcher.dispatch({
     actionType: 'ADD_FEATURED_ITEM',
-    data
+    data,
+    lang
   })
 }
 
-export function deleteFeaturedItem(id, lang) {
+export function deleteItem(id, lang) {
   Dispatcher.dispatch({
     actionType: 'DELETE_FEATURED_ITEM',
     id,

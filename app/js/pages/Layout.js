@@ -131,6 +131,7 @@ class Layout extends React.Component {
 
         <div class="container">
           <FeaturedList
+            lang={this.state.vocabularyLang}
             items={this.state.featuredWordsList}
             delete={this.deleteFeaturedWordsItem.bind(this)}
             add={this.addFeaturedWordsItem.bind(this)}

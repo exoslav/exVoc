@@ -35,20 +35,28 @@ class Store extends EventEmitter {
     return this.wordList[lang]
   }
 
-  changeItem(data) {
-    const list = this.wordList[lang]
-    const temp = list.map(item => item.name === data.id)
+  // returns undefined if not matches
+  getSingle(id, lang) {
+    return this.wordList[lang].find(item => item.id === id ? item : false)
+  }
 
-    for(key in data) {
-      if(data.hasOwnProperty(key))
-        temp[0][key] = data[key]
-    }
+  changeItem(data, lang) {
+    const currentList = this.wordList[lang]
+    const newList = currentList.map(item => {
+      if(item.id === data.id) {
+        for(let key in data) {
+          if(data.hasOwnProperty(key))
+            item[key] = data[key]
+        }
+      }
 
-    console.log(temp)
+      return item
+    })
 
-    list.concat(temp)
+    this.wordList[lang] = newList
 
     this.emit('change')
+    // this.emit('singleItemChange')
   }
 
   updateState(opts) {
@@ -61,10 +69,10 @@ class Store extends EventEmitter {
       this.totalLearned--
   }
 
-  addItem(data) {
+  addItem(data, lang) {
     const { name, description, wordClass, learned, idiom } = data
 
-    this.wordList[data.lang].push({
+    this.wordList[lang].push({
       id: Date.now(),
       name,
       description,
@@ -106,10 +114,13 @@ class Store extends EventEmitter {
   handleActions(action) {
     switch (action.actionType) {
       case 'CREATE_WORDLIST_ITEM':
-        this.addItem(action.data)
+        this.addItem(action.data, action.lang)
         break;
       case 'DELETE_WORDLIST_ITEM':
         this.deleteItem(action.id, action.lang)
+        break;
+      case 'CHANGE_WORDLIST_ITEM':
+        this.changeItem(action.data, action.lang)
         break;
     }
   }

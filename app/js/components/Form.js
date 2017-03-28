@@ -18,12 +18,11 @@ class Form extends React.Component {
     e.preventDefault()
 
     const data = this.state
-    data.lang = this.props.lang
 
-    this.props.WordListActions.createItem(data)
-    
+    this.props.WordListActions.createItem(data, this.props.lang)
+
     if(this.state.featured)
-      this.props.FeaturedWordsActions.addFeaturedItem(data)
+      this.props.FeaturedWordsActions.addFeaturedItem(data, this.props.lang)
   }
 
   handleFormChange(e) {
