@@ -1,4 +1,6 @@
 import React from 'react'
+import * as WordListActions from '../../actions/WordListActions'
+import * as FeaturedWordsActions from '../../actions/FeaturedWordsActions'
 
 class Item extends React.Component {
   constructor() {
@@ -15,6 +17,28 @@ class Item extends React.Component {
     }
 
     this.lang = null
+  }
+
+  handleLearned() {
+    const lang = this.lang
+    const data = {
+      id: this.item.id,
+      learned: !this.item.learned
+    }
+
+    WordListActions.changeItem(data, lang)
+    FeaturedWordsActions.changeItem(data, lang)
+  }
+
+  removeItem() {
+    const lang = this.lang
+    const data = {
+      id: this.item.id,
+      featured: !this.item.featured
+    }
+
+    WordListActions.changeItem(data, lang)
+    FeaturedWordsActions.deleteItem(this.item.id, lang)
   }
 
   render() {
@@ -48,14 +72,15 @@ class Item extends React.Component {
           <span>{description}</span>
           <div>
             <button
-              class={`fa fa-star btn btn-warning btn-xs`}
+              onClick={this.handleLearned.bind(this)}
+              class={`fa fa-graduation-cap btn ${item.learned ? 'btn-success' : 'btn-danger'} btn-xs`}
               type="button"
               data-id={id}
             ></button>
-            {/* <button class="btn btn-warning btn-xs" type="button" data-id={id}>Add to vocabulary</button> */}
+
             <button
-              onClick={erase}
-              class="fa fa-close btn btn-danger btn-xs"
+              onClick={this.removeItem.bind(this)}
+              class={`fa fa-star btn btn-primary btn-xs`}
               type="button"
               data-id={id}
             ></button>

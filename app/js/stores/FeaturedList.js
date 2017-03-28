@@ -15,11 +15,30 @@ class Store extends EventEmitter {
     this.emit('change')
   }
 
+  changeItem(data, lang) {
+    const currentList = this.featuredList[lang]
+    const newList = currentList.map(item => {
+      if(item.id === data.id) {
+        for(let key in data) {
+          if(data.hasOwnProperty(key))
+            item[key] = data[key]
+        }
+      }
+
+      return item
+    })
+
+    this.featuredList[lang] = newList
+
+    this.emit('change')
+    // this.emit('singleItemChange')
+  }
+
   addItem(data, lang) {
-    const { name, description, learned, wordClass } = data
+    const { id, name, description, learned, wordClass } = data
 
     this.featuredList[lang].push({
-      id: Date.now(),
+      id,
       name,
       description,
       learned,
@@ -45,6 +64,9 @@ class Store extends EventEmitter {
         break;
       case 'DELETE_FEATURED_ITEM':
         this.deleteItem(action.id, action.lang)
+        break;
+      case 'CHANGE_FEATURED_ITEM':
+        this.changeItem(action.data, action.lang)
         break;
     }
   }

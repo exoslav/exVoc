@@ -18,12 +18,6 @@ class WordList extends React.Component {
     }
   }
 
-  deleteWordListItem(e) {
-    const id = e.target.getAttribute('data-id')
-
-    this.props.WordListActions.deleteWordListItem(id, this.props.lang)
-  }
-
   handleActiveClassOnFilterMenu(e) {
     if(e.target.getAttribute('data-filter-type') === 'layout') {
       $('.layout-filter button').removeClass('active bg-primary').addClass('bg-info')
@@ -103,9 +97,6 @@ class WordList extends React.Component {
       block = <NoResult />
     } else {
       const WordList = filteredItems.map(item => <WordsListItem
-        deleteItem={this.deleteWordListItem.bind(this)}
-        FeaturedWordsActions={this.props.FeaturedWordsActions}
-        WordListActions={this.props.WordListActions}
         key={item.id}
         data={item}
         lang={this.props.lang}

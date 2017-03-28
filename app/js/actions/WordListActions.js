@@ -8,7 +8,7 @@ export function createItem(data, lang) {
   })
 }
 
-export function deleteWordListItem(id, lang) {
+export function deleteItem(id, lang) {
   Dispatcher.dispatch({
     actionType: 'DELETE_WORDLIST_ITEM',
     id,

@@ -1,5 +1,6 @@
 import React from 'react'
-import WordListStore from '../../stores/WordListStore'
+import * as WordListActions from '../../actions/WordListActions'
+import * as FeaturedWordsActions from '../../actions/FeaturedWordsActions'
 
 class WordsListItem extends React.Component {
   constructor() {
@@ -18,19 +19,35 @@ class WordsListItem extends React.Component {
     this.lang = null
   }
 
-  addFeatured(e) {
+  handleFeatured() {
     const lang = this.lang
     const data = {
       id: this.item.id,
       featured: !this.item.featured
     }
 
-    this.props.WordListActions.changeItem(data, lang)
+    WordListActions.changeItem(data, lang)
 
     if(this.item.featured)
-      this.props.FeaturedWordsActions.deleteItem(data.id, lang)
+      FeaturedWordsActions.deleteItem(data.id, lang)
     else
-      this.props.FeaturedWordsActions.addItem(this.item, lang)
+      FeaturedWordsActions.addItem(this.item, lang)
+  }
+
+  handleLearned() {
+    const lang = this.lang
+    const data = {
+      id: this.item.id,
+      learned: !this.item.learned
+    }
+
+    WordListActions.changeItem(data, lang)
+    FeaturedWordsActions.changeItem(data, lang)
+  }
+
+  deleteItem() {
+    WordListActions.deleteItem(this.item.id, this.lang)
+    FeaturedWordsActions.deleteItem(this.item.id, this.lang)
   }
 
   render() {
@@ -63,7 +80,17 @@ class WordsListItem extends React.Component {
             }
             <button
               class="fa fa-trash-o btn btn-danger btn-xs pull-right"
-              onClick={this.props.deleteItem}
+              onClick={this.deleteItem.bind(this)}
+              type="button"
+              data-id={id}
+            ></button>
+
+            {
+              // ADD/REMOVE FROM FEATURED
+            }
+            <button
+              class={`fa ${this.item.featured ? 'fa-star': 'fa-star-o'} btn btn-primary btn-xs pull-right`}
+              onClick={this.handleFeatured.bind(this)}
               type="button"
               data-id={id}
             ></button>
@@ -73,16 +100,7 @@ class WordsListItem extends React.Component {
             }
             <button
               class={`fa fa-graduation-cap btn ${this.item.learned ? 'btn-success' : 'btn-danger'} btn-xs pull-right`}
-              type="button"
-              data-id={id}
-            ></button>
-
-            {
-              // ADD/REMOVE FROM FEATURED
-            }
-            <button
-              class={`fa ${this.item.featured ? 'fa-star': 'fa-star-o'} btn btn-warning btn-xs pull-right`}
-              onClick={this.addFeatured.bind(this)}
+              onClick={this.handleLearned.bind(this)}
               type="button"
               data-id={id}
             ></button>

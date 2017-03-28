@@ -7,8 +7,6 @@ import WordsList from '../components/wordsList'
 import Form from '../components/Form'
 import LanguageMenu from '../components/LanguageMenu'
 import FeaturedList from '../components/featuredList'
-import * as WordListActions from '../actions/WordListActions'
-import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
 
 import WordListStore from '../stores/WordListStore'
 import FeaturedListStore from '../stores/FeaturedList'
@@ -77,22 +75,6 @@ class Layout extends React.Component {
     })
   }
 
-  addFeaturedWordsItem(e) {
-    let name = document.getElementById('create-featured-item-name').value
-    let content = document.getElementById('create-featured-item-content').value
-
-    FeaturedWordsActions.addFeaturedItem({
-      name,
-      content,
-      lang: this.state.vocabularyLang
-    })
-  }
-
-  deleteFeaturedWordsItem(e) {
-    const id = e.target.getAttribute('data-id')
-    FeaturedWordsActions.deleteFeaturedItem(id, this.state.vocabularyLang)
-  }
-
   render() {
     return(
       <div>
@@ -106,8 +88,6 @@ class Layout extends React.Component {
               <div class="col-sm-6">
                 <Form
                   lang={this.state.vocabularyLang}
-                  WordListActions={WordListActions}
-                  FeaturedWordsActions={FeaturedWordsActions}
                 />
               </div>
 
@@ -133,15 +113,11 @@ class Layout extends React.Component {
           <FeaturedList
             lang={this.state.vocabularyLang}
             items={this.state.featuredWordsList}
-            delete={this.deleteFeaturedWordsItem.bind(this)}
-            add={this.addFeaturedWordsItem.bind(this)}
           />
 
           <WordsList
             lang={this.state.vocabularyLang}
             items={this.state.wordList}
-            WordListActions={WordListActions}
-            FeaturedWordsActions={FeaturedWordsActions}
           />
         </div>
 

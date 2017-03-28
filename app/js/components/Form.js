@@ -1,4 +1,6 @@
 import React from 'react'
+import * as WordListActions from '../actions/WordListActions'
+import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
 
 class Form extends React.Component {
   constructor() {
@@ -19,10 +21,10 @@ class Form extends React.Component {
 
     const data = this.state
 
-    this.props.WordListActions.createItem(data, this.props.lang)
+    WordListActions.createItem(data, this.props.lang)
 
     if(this.state.featured)
-      this.props.FeaturedWordsActions.addFeaturedItem(data, this.props.lang)
+      FeaturedWordsActions.addItem(data, this.props.lang)
   }
 
   handleFormChange(e) {

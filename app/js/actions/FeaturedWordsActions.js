@@ -15,3 +15,12 @@ export function deleteItem(id, lang) {
     lang
   })
 }
+
+
+export function changeItem(data, lang) {
+  Dispatcher.dispatch({
+    actionType: 'CHANGE_FEATURED_ITEM',
+    data,
+    lang
+  })
+}

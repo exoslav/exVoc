@@ -6,7 +6,7 @@ class FeaturedList extends React.Component {
     const items = this.props.items.map((item, i) => <Item
       data={item}
       key={i}
-      delete={this.props.delete}
+      lang={this.props.lang}
     />)
 
     return(
