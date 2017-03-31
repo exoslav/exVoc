@@ -1,5 +1,5 @@
 import * as firebase from 'firebase/app'
-// import auth from 'firebase/auth'
+import authFirebase from 'firebase/auth'
 // import database from 'firebase/database'
 
 // firebase config
@@ -13,7 +13,13 @@ const config = {
 }
 
 export const app = firebase.initializeApp(config)
-export const auth = require('firebase/auth')
-export const db = require('firebase/database')
+console.log(app)
+console.log(authFirebase())
+console.log(firebase)
+export const auth = firebase.auth()
+console.log(auth)
+// export const db = firebase.database()
+// export const auth = require('firebase/auth')
+// export const db = require('firebase/database')
 
 // export const auth = require('firebase/auth')
