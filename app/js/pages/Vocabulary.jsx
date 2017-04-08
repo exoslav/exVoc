@@ -9,6 +9,7 @@ import FeaturedList from '../components/featuredList'
 import WordListStore from '../stores/WordListStore'
 import FeaturedListStore from '../stores/FeaturedList'
 
+import { auth } from '../firebase'
 class Layout extends React.Component {
   constructor() {
     super()

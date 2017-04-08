@@ -11,6 +11,7 @@ class Footer extends React.Component {
             <img src="./app/imgs/css.png" alt="CSS" title="CSS" />
             <img src="./app/imgs/react.svg" alt="react" title="react" />
             <img src="./app/imgs/flux.png" alt="flux" title="flux" />
+            <img src="./app/imgs/firebase.png" alt="firebase" title="firebase" />
           </div>
 
           <div class="author">

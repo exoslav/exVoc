@@ -21,7 +21,7 @@ module.exports = function (env) {
 
   var config = {
     entry: {
-      'global': project.jsBase + 'app.js'
+      'global': project.jsBase + 'app.jsx'
     },
     output: {
       path: path.join(__dirname, '/dist'),
@@ -41,7 +41,7 @@ module.exports = function (env) {
     //   hot: true
     // },
     resolve: {
-      extensions: ['.js', '.es6', '.jsx', '.json']
+      extensions: ['.js', '.jsx', '.es6', '.json']
     },
     module: {
       rules: [

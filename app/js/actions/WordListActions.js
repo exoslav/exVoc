@@ -1,10 +1,11 @@
 import Dispatcher from '../dispatcher'
 
-export function createItem(data, lang) {
+export function createItem(data, lang, isFeatured) {
   Dispatcher.dispatch({
     actionType: 'CREATE_WORDLIST_ITEM',
     data,
-    lang
+    lang,
+    isFeatured
   })
 }
 

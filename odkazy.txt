@@ -1,3 +1,5 @@
 https://medium.com/@mweststrate/3-reasons-why-i-stopped-using-react-setstate-ab73fc67a42e#.dl4641qo3
 zabezpeceni routu: https://medium.com/the-many/adding-login-and-authentication-sections-to-your-react-or-react-native-app-7767fd251bd1
 http://bodiddlie.github.io/firebase-auth-with-react-router/
+
+https://howtofirebase.com/save-and-query-firebase-data-ed73fb8c6e3a

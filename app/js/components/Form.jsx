@@ -1,6 +1,8 @@
 import React from 'react'
 import * as WordListActions from '../actions/WordListActions'
 import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
+import { db } from '../firebase'
+import { user } from '../userState'
 
 class Form extends React.Component {
   constructor() {
@@ -20,18 +22,33 @@ class Form extends React.Component {
     e.preventDefault()
 
     const data = this.state
+    
+    let validate = true
+    if(data.name === '' || data.name === null) {
+      this.itemName.classList.add('invalid')
+      validate = false
+    } else {
+      this.itemName.classList.remove('invalid')
+    }
 
-    WordListActions.createItem(data, this.props.lang)
+    if(data.description === '' || data.description === null) {
+      this.itemDesc.classList.add('invalid')
+      validate = false
+    } else {
+      this.itemDesc.classList.remove('invalid')
+    }
 
-    if(this.state.featured)
-      FeaturedWordsActions.addItem(data, this.props.lang)
+    if(!validate)
+      return
+
+    WordListActions.createItem(data, this.props.lang, this.state.featured)
   }
 
   handleFormChange(e) {
     let val = null
     const target = e.target
     const type = target.type
-    const name = target.name
+    let name = target.name
 
     switch (type) {
       case 'checkbox':
@@ -41,6 +58,9 @@ class Form extends React.Component {
         val = target.value
         break
     }
+
+      if(name === 'wordClass')
+          val = parseInt(val)
 
     this.setState({
       [name]: val
@@ -57,6 +77,7 @@ class Form extends React.Component {
           <div class="form-group col-xs-6">
             <label for="create-to-do-item-name">Name of the new word</label>
             <input
+              ref={itemName => this.itemName = itemName}
               id="create-to-do-item-name"
               class="form-control"
               name="name"
@@ -91,6 +112,7 @@ class Form extends React.Component {
           <label for="create-to-do-item-content">Description of the new word</label>
           <input
             id="create-to-do-item-content"
+            ref={itemDesc => this.itemDesc = itemDesc}
             class="form-control"
             name="description"
             onChange={this.handleFormChange.bind(this)}

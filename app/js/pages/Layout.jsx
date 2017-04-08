@@ -1,6 +1,9 @@
 import React from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import SessionBlock from '../components/SessionBlock'
+import { auth } from '../firebase'
+import { user, setUser } from '../userState'
 
 class Layout extends React.Component {
   constructor() {
@@ -13,8 +16,17 @@ class Layout extends React.Component {
   }
 
   render() {
+    let block = null
+    if(user) {
+      block = <SessionBlock />
+    } else {
+      block = <div />
+    }
+
     return(
       <div>
+        {block}
+        
         <header class="bg-info">
           <Header title={this.langs.TITLE} subtitle={this.langs.SUBTITLE} />
         </header>
