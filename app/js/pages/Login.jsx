@@ -87,7 +87,7 @@ class Login extends React.Component {
                   value={this.state.password}
                   id="login-pass"
                   class="form-control"
-                  type="text"
+                  type="password"
                   placeholder="password"
                   onChange={this.setPassword.bind(this)}
                 />
