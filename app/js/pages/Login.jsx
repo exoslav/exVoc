@@ -24,17 +24,9 @@ class Login extends React.Component {
     })
   }
 
-  componentDidMount() {
-    const email = document.getElementById('login-email')
-    const pass = document.getElementById('login-pass')
-    const form = document.getElementById('login-form')
-
-    form.addEventListener('submit', e => {
-      e.preventDefault()
-      auth.signInWithEmailAndPassword(email.value, pass.value)
-    })
-
-
+  signIn(e) {
+    e.preventDefault()
+    auth.signInWithEmailAndPassword(this.state.name, this.state.password)
   }
 
   signUp() {
@@ -62,47 +54,61 @@ class Login extends React.Component {
   render() {
     return(
       <div class="container">
-        <h1>Register or log in into your app, please.</h1>
-
+        <h1>Welcome to <strong>Slovíčkárno</strong> - online dictionary</h1>
+        <p>
+          Are you tired of writing your words in some useless notebook or piece of paper? If your answer is <strong>YES</strong>, keep reading and you might decide that <strong>Slovíčkárno</strong> was made exactly for you!
+        </p>
+        <p>
+          Based on frontend technologies, <strong>Slovíčkárno</strong> is the cool tool for keeping your vocabulary in the perfect shape. You can easily add or remove your words in databse, mark your featured words and keep your learning curve in rapid progess!
+        </p>
+        <p>
+          <strong>Slovíčkárno</strong> was built with these cool techs: react, firebase, flux, CSS, HTML, bootstrap and webpack2
+        </p>
+        <p>
+          Are you a new user of <strong>Slovíčkárno</strong>? You can register in the form below! It is for free.
+        </p>
         <div class="row">
-          <form id="login-form" class="col-lg-6">
-            <div class="form-group">
-              <input
-                value={this.state.name}
-                id="login-email"
-                class="form-control"
-                type="email"
-                placeholder="e-mail adress"
-                onChange={this.setName.bind(this)}
-              />
-            </div>
+          <div class="col-lg-6">
+            <h3>Login or register</h3>
+            <form onSubmit={this.signIn.bind(this)} id="login-form" class="bg-primary clearfix">
+              <div class="form-group">
+                <input
+                  value={this.state.name}
+                  id="login-email"
+                  class="form-control"
+                  type="email"
+                  placeholder="e-mail adress"
+                  onChange={this.setName.bind(this)}
+                />
+              </div>
 
-            <div class="form-group">
-              <input
-                value={this.state.password}
-                id="login-pass"
-                class="form-control"
-                type="text"
-                placeholder="password"
-                onChange={this.setPassword.bind(this)}
-              />
-            </div>
+              <div class="form-group">
+                <input
+                  value={this.state.password}
+                  id="login-pass"
+                  class="form-control"
+                  type="text"
+                  placeholder="password"
+                  onChange={this.setPassword.bind(this)}
+                />
+              </div>
 
-            <button
-              onClick={this.signUp.bind(this)}
-              class="btn btn-info pull-right"
-              type="button"
-            >
-              Register
-            </button>
+              <button
+                onClick={this.signUp.bind(this)}
+                class="btn btn-info pull-right"
+                type="button"
+              >
+                Register
+              </button>
 
-            <button
-              class="btn btn-info pull-right"
-              type="submit"
-            >
-              Log in
-            </button>
-          </form>
+              <button
+                class="btn btn-info pull-right"
+                type="submit"
+              >
+                Log in
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     )

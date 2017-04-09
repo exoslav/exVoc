@@ -1,10 +1,18 @@
 import React from 'react'
 import * as WordListActions from '../../actions/WordListActions'
 import * as FeaturedWordsActions from '../../actions/FeaturedWordsActions'
+import WordListStore from '../../stores/WordListStore'
 
 class WordsListItem extends React.Component {
   constructor() {
     super()
+
+    this.state = {
+      editNameState: false,
+      name: '',
+      editDescState: false,
+      desc: ''
+    }
 
     this.item = {
       id: null,
@@ -17,6 +25,15 @@ class WordsListItem extends React.Component {
     }
 
     this.lang = null
+  }
+
+  componentWillMount() {
+    WordListStore.on('single-item-change', () => {
+      this.setState({
+        editNameState: false,
+        editDescState: false
+      })
+    })
   }
 
   handleFeatured() {
@@ -45,9 +62,55 @@ class WordsListItem extends React.Component {
     FeaturedWordsActions.changeItem(data, lang)
   }
 
+  handleEditName(e) {
+    const data = {
+      id: this.item.id,
+      name: this.state.name
+    }
+
+    WordListActions.changeItem(data, 'CZ')
+    FeaturedWordsActions.changeItem(data, 'CZ')
+  }
+
+  handleEditDesc(e) {
+    const data = {
+      id: this.item.id,
+      description: this.state.desc
+    }
+
+    WordListActions.changeItem(data, 'CZ')
+    FeaturedWordsActions.changeItem(data, 'CZ')
+  }
+  
   deleteItem() {
     WordListActions.deleteItem(this.item.id, this.lang)
     FeaturedWordsActions.deleteItem(this.item.id, this.lang)
+  }
+
+  changeEditStateName() {
+    this.setState({
+      editNameState: true,
+      name: this.item.name
+    })
+  }
+
+  changeEditStateDesc() {
+    this.setState({
+      editDescState: true,
+      desc: this.item.description
+    })
+  }
+
+  getNameVal(e) {
+    this.setState({
+      name: e.target.value
+    })
+  }
+
+  getDescVal(e) {
+    this.setState({
+      desc: e.target.value
+    })
   }
 
   render() {
@@ -66,14 +129,54 @@ class WordsListItem extends React.Component {
 
     this.lang = lang
 
+    let nameBlock = null
+    let descBlock = null
+    if(this.state.editNameState === true) {
+      nameBlock = <div class="edit-item">
+        <input
+          type="text"
+          value={this.state.name}
+          onChange={this.getNameVal.bind(this)}
+        />
+        <button
+          class="fa fa-pencil btn btn-xs btn-success"
+          type="button"
+          onClick={this.handleEditName.bind(this)}
+        ></button>
+      </div>
+    } else {
+      nameBlock = <strong onDoubleClick={this.changeEditStateName.bind(this)} class="name">{name}</strong>
+    }
+
+    if(this.state.editDescState === true) {
+      descBlock = <div class="edit-item">
+        <input
+          type="text"
+          value={this.state.desc}
+          onChange={this.getDescVal.bind(this)}
+        />
+        <button
+          class="fa fa-pencil btn btn-xs btn-success"
+          type="button"
+          onClick={this.handleEditDesc.bind(this)}
+        ></button>
+      </div>
+    } else {
+      descBlock = <span class="description" onDoubleClick={this.changeEditStateDesc.bind(this)}>{description}</span>
+    }
+
     return(
       <div class={`${layout}`}>
         <div class={`item ${learned ? 'bg-success' : 'bg-danger'}`}>
           <dt class="wordlist-item">
-            <strong class="name">{name}</strong>
+            {nameBlock}
+            {
+              /*<strong onDoubleClick={this.changeEditState.bind(this)} class="name">{name}</strong>*/
+            }
           </dt>
           <dd>
-            <span class="description">{description}</span>
+            {descBlock}
+            {/*<span class="description">{description}</span>*/}
 
             {
               // DELETE ITEM

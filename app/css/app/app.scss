@@ -6,10 +6,6 @@ h1 {
   }
 }
 
-input {
-  transition: none !important; // bootstrap reset
-}
-
 footer {
   padding-top: 30px;
   padding-bottom: 30px;
@@ -125,6 +121,11 @@ footer {
   .item {
     margin-bottom: 15px;
     padding: 5px;
+
+    .edit-item input {
+      margin-right: 10px;
+      width: calc(160px - 34px);
+    }
   }
 }
 

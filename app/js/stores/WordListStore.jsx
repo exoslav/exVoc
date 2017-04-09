@@ -67,6 +67,7 @@ class Store extends EventEmitter {
     db.ref(`users/${user.uid}/wordList/${data.id}`).update(data)
 
     this.emit('change')
+    this.emit('single-item-change')
   }
 
   updateState(opts) {
