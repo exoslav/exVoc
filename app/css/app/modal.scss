@@ -6,4 +6,18 @@
     top: calc(50% - 222px);
     margin: 0 auto;
   }
+
+  .modal-edit-item {
+    form {
+      .modal-header .item-name {
+        margin-top: 10px;
+        font-size: 24px;
+      }
+
+      textarea {
+        max-width: 100%;
+        max-height: 150px;
+      }
+    }
+  }
 }

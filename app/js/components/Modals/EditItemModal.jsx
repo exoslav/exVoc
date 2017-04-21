@@ -1,11 +1,17 @@
 import React from 'react'
+import deepObjectCopy from '../../helpers/deepObjectCopy'
 
 class EditItemModal extends React.Component {
   constructor(props) {
     super(props)
 
+    this.initState = null
     const { name, description, learned, featured } = this.props.content
     this.state = this.props.content
+  }
+
+  componentDidMount() {
+    this.initState = deepObjectCopy(this.state)
   }
 
   changeItem(e) {
@@ -23,6 +29,12 @@ class EditItemModal extends React.Component {
 
   close(e) {
     e.preventDefault()
+
+    // if nothing was changed, do not call firebase
+    if(JSON.stringify(this.initState) === JSON.stringify(this.state)) {
+      this.props.closeModal()
+      return
+    }
 
     const item = {
       id: this.state.id,
@@ -43,10 +55,11 @@ class EditItemModal extends React.Component {
   render() {
     return(
       <div class="modal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-edit-item">
           <div class="modal-content">
-            <form>
-              <h2 class="modal-header">
+            <form ref={form => this.form = form}>
+              <div class="modal-header">
+                <h2 class="item-name"><span>Edit item</span>: {this.state.name}</h2>
                 <input
                   class="form-control"
                   type="text"
@@ -54,7 +67,7 @@ class EditItemModal extends React.Component {
                   value={this.state.name}
                   onChange={this.changeItem.bind(this)}
                 />
-              </h2>
+            </div>
 
               <div class="modal-body">
                 <textarea

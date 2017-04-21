@@ -11,37 +11,44 @@ class Store extends EventEmitter {
     super()
 
     checkLs()
-    let currentLang = ls.getItem('activeLanguageItem')
 
-    this.wordList = {[currentLang]: []}
+    this.currentLang = ls.getItem('activeLanguageItem')
+    this.wordList = [] // nastavi slovnik pri inicializaci
     this.total = null
 
     auth.onAuthStateChanged(firebaseUser => {
       if(firebaseUser) {
-        const list = []
-        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}/${currentLang}`).child('wordList')
-
-        firebaseWordsList.on('value', snapshot => {
-          // clear list
-          list.splice(0, list.length)
-
-          // firebase data
-          const data = snapshot.val()
-
-          // from firebase object to array
-          Object.keys(data).forEach(item => {
-            data[item].id = item
-            list.push(data[item])
-          })
-
-          this.wordList = {[currentLang]: list}
-          this.total = this.wordList[currentLang].length
-
-          this.emit('change')
-        })
+        this.getVocabulary(this.currentLang, firebaseUser)
       } else {
         console.log('store not logged in')
       }
+    })
+  }
+
+  getVocabulary(lang, user) {
+    const list = []
+
+    let firebaseWordsList = db.ref(`users/${user.uid}/vocabularies/${lang}`).child('wordList')
+
+    firebaseWordsList.on('value', snapshot => {
+      // clear list
+      list.splice(0, list.length)
+
+      // firebase data
+      const data = snapshot.val()
+
+      // from firebase object to array
+      if(data !== null) {
+        Object.keys(data).forEach(item => {
+          data[item].id = item
+          list.push(data[item])
+        })
+      }
+
+      this.wordList = list
+      this.total = this.wordList.length
+
+      this.emit('change')
     })
   }
 
@@ -55,19 +62,18 @@ class Store extends EventEmitter {
   }
 
   getAll(lang) {
-    return this.wordList[lang]
+    return this.wordList
   }
 
   // returns undefined if not matches
   getSingle(id, lang) {
-    return this.wordList[lang].find(item => item.id === id ? item : false)
+    return this.wordList.find(item => item.id === id ? item : false)
   }
 
   changeItem(item, lang) {
-    db.ref(`users/${user.uid}/${lang}/wordList/${item.id}`).update(item.data)
+    db.ref(`users/${user.uid}/vocabularies/${lang}/wordList/${item.id}`).update(item.data)
 
     this.emit('change')
-    this.emit('single-item-change')
   }
 
   updateState(opts) {
@@ -81,10 +87,10 @@ class Store extends EventEmitter {
   }
 
   addItem(item, lang) {
-    db.ref(`users/${user.uid}/${vocabularyLang}/wordList`).push(item)
+    db.ref(`users/${user.uid}/vocabularies/${lang}/wordList`).push(item)
     .then(res => {
       // add item id as a callback
-      db.ref(`users/${user.uid}/${vocabularyLang}/wordList/${res.getKey()}`).update({id: res.getKey()})
+      db.ref(`users/${user.uid}/vocabularies/${lang}/wordList/${res.getKey()}`).update({id: res.getKey()})
 
       if(!item.featured)
         return
@@ -102,7 +108,7 @@ class Store extends EventEmitter {
   }
 
   deleteItem(id, lang) {
-    db.ref(`users/${user.uid}/${lang}/wordList/${id}`).remove()
+    db.ref(`users/${user.uid}/vocabularies/${lang}/wordList/${id}`).remove()
 
     this.emit('change')
   }

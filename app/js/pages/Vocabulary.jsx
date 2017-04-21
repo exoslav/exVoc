@@ -13,8 +13,9 @@ import EditItemModal from '../components/Modals/EditItemModal'
 import * as WordListActions from '../actions/WordListActions'
 import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
 import { ls } from '../helpers/local-storage'
-
 import { auth } from '../firebase'
+import { user, setVocabularyLang } from '../userState'
+
 class Layout extends React.Component {
   constructor() {
     super()
@@ -26,16 +27,15 @@ class Layout extends React.Component {
       'EN'
     ]
 
-    this.vocabularyLang = this.getVocabularyLang()
     this.modalContent = null
     this.itemActions = itemActions
 
     this.state = {
-      vocabularyLang: this.vocabularyLang,
+      vocabularyLang: this.getVocabularyLang(),
       totalVocabulary: WordListStore.getTotal(),
       totalVocabularyLearned: WordListStore.getTotalLearned(),
       wordList: WordListStore.getAll('CZ'),
-      featuredWordsList: FeaturedListStore.getAll('CZ'),
+      featuredList: FeaturedListStore.getAll('CZ'),
       modalOpen: false
     }
   }
@@ -43,7 +43,7 @@ class Layout extends React.Component {
   componentWillMount() {
     FeaturedListStore.on('change', () => {
       this.setState({
-        featuredWordsList: FeaturedListStore.getAll(this.state.vocabularyLang)
+        featuredList: FeaturedListStore.getAll(this.state.vocabularyLang)
       })
     })
 
@@ -61,12 +61,12 @@ class Layout extends React.Component {
   }
 
   changeVocabulary(lang) {
-    this.vocabularyLang = lang
-    ls.setItem('activeLanguageItem', this.vocabularyLang)
+    ls.setItem('activeLanguageItem', lang)
+    setVocabularyLang(lang)
+    WordListStore.getVocabulary(lang, user)
+    FeaturedListStore.getVocabulary(lang, user)
     this.setState({
-      wordList: WordListStore.getAll(this.vocabularyLang),
-      featuredWordsList: FeaturedListStore.getAll(this.vocabularyLang),
-      vocabularyLang: this.vocabularyLang
+      vocabularyLang: lang
     })
   }
 
@@ -145,7 +145,7 @@ class Layout extends React.Component {
         <div class="container">
           <FeaturedList
             lang={this.state.vocabularyLang}
-            items={this.state.featuredWordsList}
+            items={this.state.featuredList}
             itemHandle={this.handleItem.bind(this)}
           />
 

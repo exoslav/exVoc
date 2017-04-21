@@ -18,15 +18,6 @@ class WordsListItem extends React.Component {
     }
   }
 
-  componentWillMount() {
-    WordListStore.on('single-item-change', () => {
-      this.setState({
-        editNameState: false,
-        editDescState: false
-      })
-    })
-  }
-
   handleFeatured() {
     const item = {
       id: this.item.id,

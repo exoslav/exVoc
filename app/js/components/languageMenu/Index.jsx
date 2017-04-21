@@ -1,6 +1,6 @@
 import React from 'react'
 import Item from './Item'
-import userState from '../../userState'
+import { setVocabularyLang } from '../../userState'
 // import LS from '../../helpers/localStorage'
 
 class LanguageMenu extends React.Component {
@@ -16,7 +16,7 @@ class LanguageMenu extends React.Component {
   handleLangChange(e) {
     const val = e.target.getAttribute('data-lang')
 
-    userState.setVocabularyLang(val)
+    setVocabularyLang(val)
 
     this.props.changeLang(val)
   }

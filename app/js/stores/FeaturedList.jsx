@@ -10,51 +10,56 @@ class Store extends EventEmitter {
     super()
 
     checkLs()
-    let currentLang = ls.getItem('activeLanguageItem')
 
-    this.featuredList = {CZ: []}
+    this.currentLang = ls.getItem('activeLanguageItem')
+    this.featuredList = [] // nastavi slovnik pri inicializaci
     this.total = null
 
     auth.onAuthStateChanged(firebaseUser => {
       if(firebaseUser) {
-        const list = []
-        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}/${currentLang}`).child('featuredList')
-
-        firebaseWordsList.on('value', snapshot => {
-          // clear list
-          list.splice(0, list.length)
-
-          // firebase data
-          const data = snapshot.val()
-
-          // from firebase object to array
-          Object.keys(data).forEach(item => {
-            data[item].id = item
-            list.push(data[item])
-          })
-
-          this.featuredList = {[currentLang]: list}
-          this.total = this.featuredList[currentLang].length
-
-          this.emit('change')
-        })
+        this.getVocabulary(this.currentLang, firebaseUser)
       } else {
         console.log('store not logged in')
       }
     })
   }
 
-  getAll(lang) {
-    return this.featuredList[lang]
+  getVocabulary(lang, user) {
+    const list = []
 
-    this.emit('change')
+    let firebaseWordsList = db.ref(`users/${user.uid}/vocabularies/${lang}`).child('featuredList')
+
+    firebaseWordsList.on('value', snapshot => {
+      // clear list
+      list.splice(0, list.length)
+
+      // firebase data
+      const data = snapshot.val()
+
+      // from firebase object to array
+      if(data !== null) {
+        Object.keys(data).forEach(item => {
+          data[item].id = item
+          list.push(data[item])
+        })
+      }
+
+      this.featuredList = list
+      this.total = this.featuredList.length
+
+      this.emit('change')
+    })
+  }
+
+  getAll() {
+    return this.featuredList
   }
 
   changeItem(item, lang) {
     // check if item exists in featured list, if yes, we change it
-    db.ref(`users/${user.uid}/featuredList`).once('value', snapshot => {
+    db.ref(`users/${user.uid}/vocabularies/${lang}/featuredList`).once('value', snapshot => {
       if (snapshot.hasChild(item.id)) {
-        db.ref(`users/${user.uid}/featuredList/${item.id}`).update(item.data)
+        db.ref(`users/${user.uid}/vocabularies/${lang}/featuredList/${item.id}`).update(item.data)
       } else {
         console.log('item cannot be change in featured, because it does not exits')
       }
@@ -64,14 +69,13 @@ class Store extends EventEmitter {
   }
 
   addItem(item, lang) {
-    console.log(item)
-    const wordList = db.ref(`users/${user.uid}/featuredList/${item.id}`).set(item.data)
+    const wordList = db.ref(`users/${user.uid}/vocabularies/${lang}/featuredList/${item.id}`).set(item.data)
 
     this.emit('change')
   }
 
   deleteItem(id, lang) {
-    db.ref(`users/${user.uid}/featuredList/${id}`).remove()
+    db.ref(`users/${user.uid}/vocabularies/${lang}/featuredList/${id}`).remove()
 
     this.emit('change')
   }
