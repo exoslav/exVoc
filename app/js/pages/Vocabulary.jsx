@@ -4,44 +4,39 @@ import InfoBox from '../components/InfoBox'
 import WordsList from '../components/wordsList'
 import Form from '../components/Form'
 import LanguageMenu from '../components/LanguageMenu'
+import itemActions from '../itemActions'
 import FeaturedList from '../components/featuredList'
-
 import WordListStore from '../stores/WordListStore'
 import FeaturedListStore from '../stores/FeaturedList'
+import Modal from '../components/Modals/DefaultModal'
+import EditItemModal from '../components/Modals/EditItemModal'
+import * as WordListActions from '../actions/WordListActions'
+import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
+import { ls } from '../helpers/local-storage'
 
 import { auth } from '../firebase'
 class Layout extends React.Component {
   constructor() {
     super()
 
+    this.defaultLang = 'CZ'
     this.menuItems = [
       'CZ',
       'SK',
       'EN'
     ]
 
-    this.vocabularyOpts = {
-      langs: this.menuItems,
-      activeLang: (() => {
-        let activeItem
-
-        if(localStorage.getItem('activeLanguageItem')) {
-          activeItem = localStorage.getItem('activeLanguageItem')
-        } else {
-          localStorage.setItem('activeLanguageItem', this.menuItems[0])
-          activeItem = this.menuItems[0]
-        }
-
-        return activeItem
-      })()
-    }
+    this.vocabularyLang = this.getVocabularyLang()
+    this.modalContent = null
+    this.itemActions = itemActions
 
     this.state = {
-      vocabularyLang: this.vocabularyOpts.activeLang,
+      vocabularyLang: this.vocabularyLang,
       totalVocabulary: WordListStore.getTotal(),
       totalVocabularyLearned: WordListStore.getTotalLearned(),
-      wordList: WordListStore.getAll(this.vocabularyOpts.activeLang),
-      featuredWordsList: FeaturedListStore.getAll(this.vocabularyOpts.activeLang)
+      wordList: WordListStore.getAll('CZ'),
+      featuredWordsList: FeaturedListStore.getAll('CZ'),
+      modalOpen: false
     }
   }
 
@@ -61,22 +56,70 @@ class Layout extends React.Component {
     })
   }
 
+  getVocabularyLang() {
+    return ls.getItem('activeLanguageItem') || this.defaultLang
+  }
+
   changeVocabulary(lang) {
+    this.vocabularyLang = lang
+    ls.setItem('activeLanguageItem', this.vocabularyLang)
     this.setState({
-      wordList: WordListStore.getAll(lang),
-      featuredWordsList: FeaturedListStore.getAll(lang),
-      vocabularyLang: lang
+      wordList: WordListStore.getAll(this.vocabularyLang),
+      featuredWordsList: FeaturedListStore.getAll(this.vocabularyLang),
+      vocabularyLang: this.vocabularyLang
+    })
+  }
+
+  handleItem(item, type, action) {
+    this.itemActions[type][action](item, this.state.vocabularyLang)
+  }
+
+  openModal(content, type) {
+    this.modalType = type
+    this.modalContent = content
+    this.setState({
+      modalOpen: true
+    })
+  }
+
+  closeModal(item, type, action) {
+    this.modalContent = null
+    this.setState({
+      modalOpen: false
     })
   }
 
   render() {
+    let modal = null
+    if(this.state.modalOpen) {
+      switch (this.modalType) {
+        case 'editItem':
+          modal = <EditItemModal
+            content={this.modalContent}
+            closeModal={this.closeModal.bind(this)}
+            handleItem={this.handleItem.bind(this)}
+          />
+          break;
+        default:
+          modal = <DefaultModal
+            content={this.modalContent}
+            closeModal={this.closeModal.bind(this)}
+            handleItem={this.handleItem.bind(this)}
+          />
+      }
+    } else {
+      modal = <div/>
+    }
+
     return(
       <div>
+        {modal}
         <div id="vocabulary-header" class="bg-primary vocabulary-box">
           <div class="container">
             <div class="row">
               <div class="col-sm-6">
                 <Form
+                  itemHandle={this.handleItem.bind(this)}
                   lang={this.state.vocabularyLang}
                 />
               </div>
@@ -90,8 +133,8 @@ class Layout extends React.Component {
 
               <div class="col-sm-6">
                 <LanguageMenu
-                  items={this.vocabularyOpts.langs}
-                  activeItem={this.vocabularyOpts.activeLang}
+                  items={this.menuItems}
+                  activeItem={this.state.vocabularyLang}
                   changeLang={this.changeVocabulary.bind(this)}
                 />
               </div>
@@ -103,11 +146,13 @@ class Layout extends React.Component {
           <FeaturedList
             lang={this.state.vocabularyLang}
             items={this.state.featuredWordsList}
+            itemHandle={this.handleItem.bind(this)}
           />
 
           <WordsList
-            lang={this.state.vocabularyLang}
             items={this.state.wordList}
+            itemHandle={this.handleItem.bind(this)}
+            openModal={this.openModal.bind(this)}
           />
         </div>
       </div>

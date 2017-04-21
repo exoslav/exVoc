@@ -1,26 +1,26 @@
 import Dispatcher from '../dispatcher'
 
-export function addItem(data, lang) {
+export function addItem(item, lang) {
   Dispatcher.dispatch({
-    actionType: 'ADD_FEATURED_ITEM',
-    data,
+    actionType: 'ADD_ITEM_TO_FEATURED',
+    item,
     lang
   })
 }
 
-export function deleteItem(id, lang) {
+export function deleteItem(item, lang) {
   Dispatcher.dispatch({
-    actionType: 'DELETE_FEATURED_ITEM',
-    id,
+    actionType: 'DELETE_ITEM_FROM_FEATURED',
+    item,
     lang
   })
 }
 
 
-export function changeItem(data, lang) {
+export function changeItem(item, lang) {
   Dispatcher.dispatch({
-    actionType: 'CHANGE_FEATURED_ITEM',
-    data,
+    actionType: 'CHANGE_ITEM_IN_FEATURED',
+    item,
     lang
   })
 }

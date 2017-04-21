@@ -2,21 +2,25 @@ import { EventEmitter } from 'events'
 import Dispatcher from '../dispatcher'
 // import vocabulary from '../test-data/vocabulary'
 import { auth, db } from '../firebase'
-import { user } from '../userState'
+import { user, vocabularyLang } from '../userState'
 import * as FeaturedWordsActions from '../actions/FeaturedWordsActions'
+import { ls, checkLs } from '../helpers/local-storage'
 
 class Store extends EventEmitter {
   constructor() {
     super()
 
-    this.wordList = {CZ: []}
+    checkLs()
+    let currentLang = ls.getItem('activeLanguageItem')
+
+    this.wordList = {[currentLang]: []}
     this.total = null
 
     auth.onAuthStateChanged(firebaseUser => {
       if(firebaseUser) {
         const list = []
-        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}`).child('wordList')
-        
+        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}/${currentLang}`).child('wordList')
+
         firebaseWordsList.on('value', snapshot => {
           // clear list
           list.splice(0, list.length)
@@ -30,8 +34,8 @@ class Store extends EventEmitter {
             list.push(data[item])
           })
 
-          this.wordList = {CZ: list}
-          this.total = this.wordList['CZ'].length
+          this.wordList = {[currentLang]: list}
+          this.total = this.wordList[currentLang].length
 
           this.emit('change')
         })
@@ -39,10 +43,6 @@ class Store extends EventEmitter {
         console.log('store not logged in')
       }
     })
-  }
-
-  setWordList(data) {
-    this.wordList = data
   }
 
   getTotalLearned() {
@@ -63,8 +63,8 @@ class Store extends EventEmitter {
     return this.wordList[lang].find(item => item.id === id ? item : false)
   }
 
-  changeItem(data, lang) {
-    db.ref(`users/${user.uid}/wordList/${data.id}`).update(data)
+  changeItem(item, lang) {
+    db.ref(`users/${user.uid}/${lang}/wordList/${item.id}`).update(item.data)
 
     this.emit('change')
     this.emit('single-item-change')
@@ -80,38 +80,44 @@ class Store extends EventEmitter {
       this.totalLearned--
   }
 
-  addItem(data, lang, isFeatured) {
-    db.ref(`users/${user.uid}/wordList`).push(data)
-    .then(item => {
-      if(!isFeatured)
+  addItem(item, lang) {
+    db.ref(`users/${user.uid}/${vocabularyLang}/wordList`).push(item)
+    .then(res => {
+      // add item id as a callback
+      db.ref(`users/${user.uid}/${vocabularyLang}/wordList/${res.getKey()}`).update({id: res.getKey()})
+
+      if(!item.featured)
         return
 
-      console.log('adding featured')
       // create item in featured with the same KEY TOKEN (notw both items has the same id)
-      const featuredItemData = data
-      featuredItemData.id = item.getKey()
-      FeaturedWordsActions.addItem(featuredItemData, 'CZ')
+      const featured = {
+        id: res.getKey(),
+        data: item
+      }
+      featured.data.id = res.getKey()
+      FeaturedWordsActions.addItem(featured, 'CZ')
     })
 
     this.emit('change')
   }
 
   deleteItem(id, lang) {
-    db.ref(`users/${user.uid}/wordList/${id}`).remove()
+    db.ref(`users/${user.uid}/${lang}/wordList/${id}`).remove()
 
     this.emit('change')
   }
 
   handleActions(action) {
     switch (action.actionType) {
-      case 'CREATE_WORDLIST_ITEM':
-        this.addItem(action.data, action.lang, action.isFeatured)
+      case 'CREATE_ITEM_IN_WORDLIST':
+        this.addItem(action.item, action.lang)
         break;
-      case 'DELETE_WORDLIST_ITEM':
-        this.deleteItem(action.id, action.lang)
+      case 'DELETE_ITEM_FROM_WORDLIST':
+
+        this.deleteItem(action.item.id, action.lang)
         break;
-      case 'CHANGE_WORDLIST_ITEM':
-        this.changeItem(action.data, action.lang)
+      case 'CHANGE_ITEM_IN_WORDLIST':
+        this.changeItem(action.item, action.lang)
         break;
     }
   }

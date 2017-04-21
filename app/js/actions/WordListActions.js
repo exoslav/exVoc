@@ -1,26 +1,25 @@
 import Dispatcher from '../dispatcher'
 
-export function createItem(data, lang, isFeatured) {
+export function createItem(item, lang) {
   Dispatcher.dispatch({
-    actionType: 'CREATE_WORDLIST_ITEM',
-    data,
-    lang,
-    isFeatured
-  })
-}
-
-export function deleteItem(id, lang) {
-  Dispatcher.dispatch({
-    actionType: 'DELETE_WORDLIST_ITEM',
-    id,
+    actionType: 'CREATE_ITEM_IN_WORDLIST',
+    item,
     lang
   })
 }
 
-export function changeItem(data, lang) {
+export function deleteItem(item, lang) {
   Dispatcher.dispatch({
-    actionType: 'CHANGE_WORDLIST_ITEM',
-    data,
+    actionType: 'DELETE_ITEM_FROM_WORDLIST',
+    item,
+    lang
+  })
+}
+
+export function changeItem(item, lang) {
+  Dispatcher.dispatch({
+    actionType: 'CHANGE_ITEM_IN_WORDLIST',
+    item,
     lang
   })
 }

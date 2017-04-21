@@ -99,8 +99,9 @@ class WordList extends React.Component {
       const WordList = filteredItems.map(item => <WordsListItem
         key={item.id}
         data={item}
-        lang={this.props.lang}
         layout={this.state.layout}
+        itemHandle={this.props.itemHandle}
+        openModal={this.props.openModal}
       />)
 
       block = <ResultList items={WordList} />

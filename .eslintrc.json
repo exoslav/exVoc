@@ -1,0 +1,17 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "rules": {
+        "semi": ["error", "never"],
+        "init-declarations": ["error", "always"],
+        "no-undef": "error",
+        "no-use-before-define": "error",
+        "wrap-iife": ["error", "outside"]
+    }
+}

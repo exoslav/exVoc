@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Vocabulary from './pages/Vocabulary'
 import { auth } from './firebase'
 import { user, setUser } from './userState'
+import { checkLs } from './helpers/local-storage'
 
 const appHistory = hashHistory
 let init = false

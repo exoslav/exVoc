@@ -1,0 +1,9 @@
+.modal {
+  display: block !important;
+  background: rgba(0, 0, 0, .5);
+
+  > div {
+    top: calc(50% - 222px);
+    margin: 0 auto;
+  }
+}

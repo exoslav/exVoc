@@ -7,13 +7,6 @@ class WordsListItem extends React.Component {
   constructor() {
     super()
 
-    this.state = {
-      editNameState: false,
-      name: '',
-      editDescState: false,
-      desc: ''
-    }
-
     this.item = {
       id: null,
       name: null,
@@ -23,8 +16,6 @@ class WordsListItem extends React.Component {
       wordClass: null,
       description: null
     }
-
-    this.lang = null
   }
 
   componentWillMount() {
@@ -37,85 +28,52 @@ class WordsListItem extends React.Component {
   }
 
   handleFeatured() {
-    const lang = this.lang
-    const data = {
+    const item = {
       id: this.item.id,
-      featured: !this.item.featured
+      data: {
+        featured: !this.item.featured
+      }
+    }
+    const featuredType = this.item.featured ? 'deleteItem' : 'addItem'
+
+    this.props.itemHandle(item, 'vocabulary', 'changeItem')
+
+    if(featuredType === 'addItem') {
+      item.data = this.item
+      item.data.featured = !this.item.featured
     }
 
-    WordListActions.changeItem(data, lang)
-
-    if(this.item.featured)
-      FeaturedWordsActions.deleteItem(data.id, lang)
-    else
-      FeaturedWordsActions.addItem(this.item, lang)
+    this.props.itemHandle(item, 'featured', featuredType)
   }
 
   handleLearned() {
-    const lang = this.lang
-    const data = {
+    const item = {
       id: this.item.id,
-      learned: !this.item.learned
+      data: {
+        learned: !this.item.learned
+      }
     }
 
-    WordListActions.changeItem(data, lang)
-    FeaturedWordsActions.changeItem(data, lang)
+    this.props.itemHandle(item, 'vocabulary', 'changeItem')
+    this.props.itemHandle(item, 'featured', 'changeItem')
   }
 
-  handleEditName(e) {
-    const data = {
-      id: this.item.id,
-      name: this.state.name
-    }
-
-    WordListActions.changeItem(data, 'CZ')
-    FeaturedWordsActions.changeItem(data, 'CZ')
-  }
-
-  handleEditDesc(e) {
-    const data = {
-      id: this.item.id,
-      description: this.state.desc
-    }
-
-    WordListActions.changeItem(data, 'CZ')
-    FeaturedWordsActions.changeItem(data, 'CZ')
-  }
-  
   deleteItem() {
-    WordListActions.deleteItem(this.item.id, this.lang)
-    FeaturedWordsActions.deleteItem(this.item.id, this.lang)
+    const item = {
+      id: this.item.id,
+      data: {}
+    }
+
+    this.props.itemHandle(item, 'vocabulary', 'deleteItem')
+    this.props.itemHandle(item, 'featured', 'deleteItem')
   }
 
-  changeEditStateName() {
-    this.setState({
-      editNameState: true,
-      name: this.item.name
-    })
-  }
-
-  changeEditStateDesc() {
-    this.setState({
-      editDescState: true,
-      desc: this.item.description
-    })
-  }
-
-  getNameVal(e) {
-    this.setState({
-      name: e.target.value
-    })
-  }
-
-  getDescVal(e) {
-    this.setState({
-      desc: e.target.value
-    })
+  openModalWithItem(e) {
+    this.props.openModal(this.item, 'editItem')
   }
 
   render() {
     const item = this.item
-    const lang = this.props.lang
     const layout = this.props.layout
     const { id, name, idiom, learned, featured, wordClass, description } = this.props.data
 
@@ -127,56 +85,14 @@ class WordsListItem extends React.Component {
     item.wordClass = wordClass
     item.description = description
 
-    this.lang = lang
-
-    let nameBlock = null
-    let descBlock = null
-    if(this.state.editNameState === true) {
-      nameBlock = <div class="edit-item">
-        <input
-          type="text"
-          value={this.state.name}
-          onChange={this.getNameVal.bind(this)}
-        />
-        <button
-          class="fa fa-pencil btn btn-xs btn-success"
-          type="button"
-          onClick={this.handleEditName.bind(this)}
-        ></button>
-      </div>
-    } else {
-      nameBlock = <strong onDoubleClick={this.changeEditStateName.bind(this)} class="name">{name}</strong>
-    }
-
-    if(this.state.editDescState === true) {
-      descBlock = <div class="edit-item">
-        <input
-          type="text"
-          value={this.state.desc}
-          onChange={this.getDescVal.bind(this)}
-        />
-        <button
-          class="fa fa-pencil btn btn-xs btn-success"
-          type="button"
-          onClick={this.handleEditDesc.bind(this)}
-        ></button>
-      </div>
-    } else {
-      descBlock = <span class="description" onDoubleClick={this.changeEditStateDesc.bind(this)}>{description}</span>
-    }
-
     return(
       <div class={`${layout}`}>
         <div class={`item ${learned ? 'bg-success' : 'bg-danger'}`}>
           <dt class="wordlist-item">
-            {nameBlock}
-            {
-              /*<strong onDoubleClick={this.changeEditState.bind(this)} class="name">{name}</strong>*/
-            }
+            <strong class="name">{name}</strong>
           </dt>
           <dd>
-            {descBlock}
-            {/*<span class="description">{description}</span>*/}
+            <span class="description">{description}</span>
 
             {
               // DELETE ITEM
@@ -206,6 +122,15 @@ class WordsListItem extends React.Component {
               onClick={this.handleLearned.bind(this)}
               type="button"
               data-id={id}
+            ></button>
+
+            {
+              // EDIT ITEM
+            }
+            <button
+              class={`fa fa-edit btn btn-warning btn-xs pull-right`}
+              onClick={this.openModalWithItem.bind(this)}
+              type="button"
             ></button>
           </dd>
         </div>

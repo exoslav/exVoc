@@ -22,7 +22,7 @@ class Form extends React.Component {
     e.preventDefault()
 
     const data = this.state
-    
+
     let validate = true
     if(data.name === '' || data.name === null) {
       this.itemName.classList.add('invalid')
@@ -41,7 +41,7 @@ class Form extends React.Component {
     if(!validate)
       return
 
-    WordListActions.createItem(data, this.props.lang, this.state.featured)
+    this.props.itemHandle(this.state, 'vocabulary', 'createItem')
   }
 
   handleFormChange(e) {

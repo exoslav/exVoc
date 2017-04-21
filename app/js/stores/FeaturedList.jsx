@@ -3,10 +3,14 @@ import Dispatcher from '../dispatcher'
 //import featured from '../test-data/featured'
 import { auth, db } from '../firebase'
 import { user } from '../userState'
+import { ls, checkLs } from '../helpers/local-storage'
 
 class Store extends EventEmitter {
   constructor() {
     super()
+
+    checkLs()
+    let currentLang = ls.getItem('activeLanguageItem')
 
     this.featuredList = {CZ: []}
     this.total = null
@@ -14,8 +18,8 @@ class Store extends EventEmitter {
     auth.onAuthStateChanged(firebaseUser => {
       if(firebaseUser) {
         const list = []
-        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}`).child('featuredList')
-        
+        let firebaseWordsList = db.ref(`users/${firebaseUser.uid}/${currentLang}`).child('featuredList')
+
         firebaseWordsList.on('value', snapshot => {
           // clear list
           list.splice(0, list.length)
@@ -29,8 +33,8 @@ class Store extends EventEmitter {
             list.push(data[item])
           })
 
-          this.featuredList = {CZ: list}
-          this.total = this.featuredList['CZ'].length
+          this.featuredList = {[currentLang]: list}
+          this.total = this.featuredList[currentLang].length
 
           this.emit('change')
         })
@@ -46,11 +50,11 @@ class Store extends EventEmitter {
     this.emit('change')
   }
 
-  changeItem(data, lang) {
+  changeItem(item, lang) {
     // check if item exists in featured list, if yes, we change it
     db.ref(`users/${user.uid}/featuredList`).once('value', snapshot => {
-      if (snapshot.hasChild(data.id)) {
-        db.ref(`users/${user.uid}/featuredList/${data.id}`).update(data)
+      if (snapshot.hasChild(item.id)) {
+        db.ref(`users/${user.uid}/featuredList/${item.id}`).update(item.data)
       } else {
         console.log('item cannot be change in featured, because it does not exits')
       }
@@ -59,8 +63,9 @@ class Store extends EventEmitter {
     this.emit('change')
   }
 
-  addItem(data, lang) {
-    const wordList = db.ref(`users/${user.uid}/featuredList/${data.id}`).set(data)
+  addItem(item, lang) {
+    console.log(item)
+    const wordList = db.ref(`users/${user.uid}/featuredList/${item.id}`).set(item.data)
 
     this.emit('change')
   }
@@ -73,14 +78,14 @@ class Store extends EventEmitter {
 
   handleActions(action) {
     switch (action.actionType) {
-      case 'ADD_FEATURED_ITEM':
-        this.addItem(action.data, action.lang)
+      case 'ADD_ITEM_TO_FEATURED':
+        this.addItem(action.item, action.lang)
         break;
-      case 'DELETE_FEATURED_ITEM':
-        this.deleteItem(action.id, action.lang)
+      case 'DELETE_ITEM_FROM_FEATURED':
+        this.deleteItem(action.item.id, action.lang)
         break;
-      case 'CHANGE_FEATURED_ITEM':
-        this.changeItem(action.data, action.lang)
+      case 'CHANGE_ITEM_IN_FEATURED':
+        this.changeItem(action.item, action.lang)
         break;
     }
   }

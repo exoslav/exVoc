@@ -1,6 +1,4 @@
 import React from 'react'
-import * as WordListActions from '../../actions/WordListActions'
-import * as FeaturedWordsActions from '../../actions/FeaturedWordsActions'
 
 class Item extends React.Component {
   constructor() {
@@ -15,35 +13,34 @@ class Item extends React.Component {
       wordClass: null,
       description: null
     }
-
-    this.lang = null
   }
 
   handleLearned() {
-    const lang = this.lang
-    const data = {
+    const item = {
       id: this.item.id,
-      learned: !this.item.learned
+      data: {
+        learned: !this.item.learned
+      }
     }
 
-    WordListActions.changeItem(data, lang)
-    FeaturedWordsActions.changeItem(data, lang)
+    this.props.itemHandle(item, 'vocabulary', 'changeItem')
+    this.props.itemHandle(item, 'featured', 'changeItem')
   }
 
   removeItem() {
-    const lang = this.lang
-    const data = {
+    const item = {
       id: this.item.id,
-      featured: !this.item.featured
+      data: {
+        featured: !this.item.featured
+      }
     }
 
-    WordListActions.changeItem(data, lang)
-    FeaturedWordsActions.deleteItem(this.item.id, lang)
+    this.props.itemHandle(item, 'vocabulary', 'changeItem')
+    this.props.itemHandle(item, 'featured', 'deleteItem')
   }
 
   render() {
     const item = this.item
-    const lang = this.props.lang
     const erase = this.props.delete
     const { id, name, idiom, learned, featured, wordClass, description } = this.props.data
 
@@ -54,8 +51,6 @@ class Item extends React.Component {
     item.featured = featured
     item.wordClass = wordClass
     item.description = description
-
-    this.lang = lang
 
     return(
       <div class="item col-sm-3">

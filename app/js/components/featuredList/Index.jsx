@@ -7,6 +7,7 @@ class FeaturedList extends React.Component {
       data={item}
       key={i}
       lang={this.props.lang}
+      itemHandle={this.props.itemHandle}
     />)
 
     return(
